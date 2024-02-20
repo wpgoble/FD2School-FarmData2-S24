@@ -18,22 +18,22 @@
     <br><br>
     <label for="cropDropDown">Crop:</label>
     <select id="cropDropDown" v-model="crop">
-        <option v-for="crop in cropNames">{{ crop }}</option>
+        <option v-for="crop in cropList">{{ crop }}</option>
     </select>
     <label for="areaDropDown">Area:</label>
     <select id="areaDropDown">
-        <option v-for="area in areaNames">{{ area }}</option>
+        <option v-for="area in areaList">{{ area }}</option>
     </select>
     <br><br>
-    <input type="button" value="Generate Report" @click='generateReport'></input>
+    <input type="button" value="Generate Report" @click='addHarvestLog'></input>
     <hr>
     <div v-if="reportVisible">
         <h1>{{ reportTitle=="" ? "Mock Harvest Report" : reportTitle }}</h1>
         <p>Details:</p>
         <ul>
-            <li><strong>Farm:</strong> {{ farmName }}</li>
-            <li><strong>User:</strong> {{ currentUser }}</li>
-            <li><strong>Language:</strong>{{ language }}</li>
+            <li><strong>Farm:</strong> Sample Farm</li>
+            <li><strong>User:</strong> manager1</li>
+            <li><strong>Language:</strong> English</li>
             <br>
             <li><strong>Start:</strong> {{ startDate }}</li>
             <li><strong>End:</strong> {{ endDate }}</li>
@@ -70,40 +70,16 @@
             reportTitle: "My Sample Report",
             startDate: "2020-05-05",
             endDate: "2020-05-15",
-            crop: "KALE",
+            crop: "Kale",
+            cropList: [ "Broccoli", "Kale", "Peas" ],
+            areaList: [ "All", "Chuau-1", "SQ7" ],
             harvestList: [],
             reportVisible: false,
-            farmName: "",
-            currentUser: "",
-            language: "",
-            idToCropMap: new Map(),
-            idToAreaMap: new Map(),
-        },
-        computed: {
-            cropNames: function() {
-                return Array.from(this.idToCropMap.values());
-            },
-            areaNames: function() {
-                return Array.from(this.idToAreaMap.values());
-            },
         },
         methods: {
-            generateReport: function() {
-                // Request the farm information from the server.
-                axios.get('/farm.json') 
-                .then((response) => {
-                    this.farmName = response.data.name
-                    this.currentUser = response.data.user.name
-                    this. language = response.data.languages.en.name
-                })
-                .catch((error) => {
-                    console.log("Error Occurred")
-                    console.log(error)
-                })
-
+            addHarvestLog: function() {
                 if (!this.reportVisible) {
                     this.reportVisible = true;
-
                 }
                 else {
                     if (this.harvestList.length == 0) {
@@ -122,25 +98,8 @@
             },
             deleteHarvestLog: function(row) {
                 this.harvestList.splice(row,1)
-            },
+            }
         },
-        created() {
-            getIDToCropMap()
-            .then((theMap) => {
-                this.idToCropMap = theMap
-            })
-            .catch((err) => {
-                console.log("Error requesting the id to Crop Map")
-            })
-
-            getIDToAreaMap()
-            .then((theMap) => {
-                this.idToAreaMap = theMap
-            })
-            .catch((err) => {
-                console.log("Error requesting the id to Area Map")
-            })
-        }
     });
     Vue.config.devtools = true;
 </script>
